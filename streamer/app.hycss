@@ -1,3 +1,22 @@
 .container {
+  display: flex;
   flex: 1;
+  justify-content: center;
+  align-items: center;
+}
+
+.pageBody{
+  width: 375;
+  height: 476;
+  display: flex;
+}
+
+.titleText{
+  width:86;
+  height:26;
+  margin: 5px auto
+}
+
+.pageContent{
+  flex:1;
 }

@@ -1,0 +1,20 @@
+.createGameBtn,.entryGameBtn{
+    width: 200;
+    height: 48;
+    margin: 0 auto;
+}
+
+.btnText{
+    text-align: center;
+    margin: auto;
+    color: white;
+}
+.entryContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%
+}
+.createGameBtn{
+    margin-bottom: 50;
+}

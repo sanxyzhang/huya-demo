@@ -1,0 +1,93 @@
+.searchContent{
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 80%;
+}
+.btnView {
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    margin-top: 20;
+}
+
+.entryBtn {
+    margin-right: 30;
+    width: 142;
+    height: 48;
+}
+
+.returnBtn {
+    width: 142;
+    height: 48;
+}
+
+.btnWarpView{
+    margin: auto;
+}
+
+.btnText {
+    text-align: center;
+    color: white;
+}
+
+.searchInput {
+    width: 256;
+    height: 40;
+    margin: 0 auto;
+    margin-bottom: 20;
+}
+
+.realInput{
+    background: transparent;
+    font-size: 20;
+    border: 0;
+    height: 38;
+    color: white;
+    outline:none;
+}
+
+::-webkit-input-placeholder { /* WebKit browsers */ 
+    color: white; 
+} 
+
+.boardItem{
+    height: 44;
+    width: 300;
+    margin: 0 auto;
+    margin-bottom: 20;
+}
+.boardContent{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 100%;
+    align-items: center;
+}
+.groupImg{
+    display: flex;
+    justify-content: flex-start;
+    flex-direction: row;    
+}
+.ownerImg, .groupImgitem{
+    width: 32;
+    height: 32;
+    border-radius: 50%;
+    align-self: center;
+    margin-left:10;
+}
+
+.groupImgitem{
+    margin-left: -15;
+}
+
+.roomScroll{
+    height: 280;
+}
+
+
+.boardItem{
+    border-width: 2px;
+    border-style: solid;
+    border-color: white;
+  }

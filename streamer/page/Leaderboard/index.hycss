@@ -1,0 +1,143 @@
+.LeaderBoardMain {
+  display: flex;
+  flex: 1;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  position: relative;
+  min-height: 270;
+}
+
+.boardItem {
+  position: absolute;
+  height: 44;
+  margin-bottom: 10px;
+  width: 300;
+  transitionProperty: top;
+  transitionDuration: 1000ms;
+}
+
+.boardContent {
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  align-items: center;
+  height: 100%;
+  color: white;
+}
+
+.roomText {
+  font-size: 18;
+  text-align: center;
+  color: white
+}
+
+.textLine {
+  height: 2;
+  width: 300;
+  margin: 0 auto;
+  margin-bottom: 8;
+}
+
+.imgLogo {
+  margin-left: 20;
+  color: white;
+}
+
+.userName {
+  color: white;
+}
+
+.itemNum {
+  margin-right: 20;
+  color: white;
+}
+
+.gameRuleContent,
+.gameRuleTitle {
+  text-align: center;
+  color: white;
+  font-size: 18;
+}
+
+.startBtnBg{
+  height: 48;
+  width: 142;
+  position: absolute;
+  bottom: -50;
+  left: 30%;
+}
+
+.startBtn{
+  background: transparent;
+  border: 0;
+  width: 140;
+  height: 48;
+  font-size: 24;
+  color: white;
+}
+
+.leaveBtnBg {
+  height: 48;
+  width: 142;
+  position: absolute;
+  bottom: -100;
+  left: 30%;
+}
+
+.leaveBtn {
+  background: transparent;
+  border: 0;
+  width: 140;
+  height: 48;
+  font-size: 24;
+  color: white;
+}
+
+.modalLeaveBtnBg{
+  height: 48;
+  width: 142;
+  margin-left: 30;
+}
+.modalCancelBtnBg {
+  height: 48;
+  width: 142;
+}
+
+.modalCancelBtn,
+.modalLeaveBtn{
+  background: transparent;
+  border: 0;
+  width: 140;
+  height: 48;
+  font-size: 24;
+  color: white;
+}
+
+.confirmLeaveBg {
+  width: 320;
+  height: 168;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+
+.modalBtnGroup{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+}
+
+.wihteCommonText {
+  color: white;
+  text-align: center;
+  font-size: 18;
+}
+
+.groupImg{
+  width: 32;
+  height: 32;
+  border-radius: 50%;
+  align-self: center;
+  margin-left:10;
+}
