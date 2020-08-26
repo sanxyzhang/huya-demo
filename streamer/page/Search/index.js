@@ -35,7 +35,6 @@ class Search extends Component {
     }
 
     checkRoom = (roomNumber) => {
-        debugger;
         this.setState({
             roomNumber: roomNumber,
             checkRoomNum: roomNumber
@@ -44,7 +43,6 @@ class Search extends Component {
 
     joinGame = () => {
         let { toPage3, userInfo } = this.props;
-        debugger;
         hyExt.request({
             method: 'POST',
             url: 'http://91ccd8e7b540.ngrok.io/joinRoom',
@@ -54,7 +52,6 @@ class Search extends Component {
             },
             dataType: 'json'
         }).then((res) => {
-            debugger;
             if (res.err) {
                 Tip.show(res.msg, 2000, false, 'center')
                 this.getList();
