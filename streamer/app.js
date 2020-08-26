@@ -18,7 +18,7 @@ class App extends Component {
 		}
 	}
 
-	componentWillMount() {
+	UNSAFE_componentWillMount() {
 		hyExt.context.getUserInfo().then(userInfo => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息成功，返回：' + JSON.stringify(userInfo));
 			hyExt.context.getStreamerInfo().then(roomInfo => {
@@ -34,8 +34,6 @@ class App extends Component {
 		}).catch(err => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息失败，错误信息：' + err.message)
 		})
-
-
 
 	}
 

@@ -105,7 +105,7 @@ class LeaderBoard extends Component {
         this.roomEventListenr()
     }
 
-    componentWillUnmount() {
+    UNSAFE_componentWillMount() {
         hyExt.observer.off('roomStatus', () => { });
         hyExt.observer.off('giftEvent', () => { })
     }
