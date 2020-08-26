@@ -23,7 +23,6 @@
   flex-direction: row;
   align-items: center;
   height: 100%;
-  color: white;
 }
 
 .roomText {
@@ -68,13 +67,15 @@
   left: 30%;
 }
 
+.white_24{
+  color: white;
+  font-size: 24;
+}
 .startBtn{
   background: transparent;
   border: 0;
   width: 140;
   height: 48;
-  font-size: 24;
-  color: white;
 }
 
 .leaveBtnBg {
@@ -90,8 +91,6 @@
   border: 0;
   width: 140;
   height: 48;
-  font-size: 24;
-  color: white;
 }
 
 .modalLeaveBtnBg{
@@ -110,8 +109,6 @@
   border: 0;
   width: 140;
   height: 48;
-  font-size: 24;
-  color: white;
 }
 
 .confirmLeaveBg {

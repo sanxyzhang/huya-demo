@@ -14,8 +14,8 @@
     "config": {
       "webSDKVersion": "latest",
       "webTitle": "web_demo",
-      "designWidth": 750,
-      "https": true,
+      "designWidth": 780,
+      "https": false,
       "host": "localhost",
       "port": 18080,
       "enableLint": {

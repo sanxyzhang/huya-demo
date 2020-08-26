@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { TouchableWithoutFeedback } from 'react-native'
 import './index.hycss'
 
-const { View, Text, BackgroundImage } = UI
+const { View, Text, BackgroundImage, Tip } = UI
 
 class App extends Component {
     constructor(props) {
@@ -15,13 +15,20 @@ class App extends Component {
         //请求生成房间号，并传递主播信息
         hyExt.request({
             method: 'POST',
-            url: 'https://www.qunar.com/hotel/mustTry?city=beijing_city',
-            data: { userInfo },
-            dataType: 'json'
+            url: 'http://a2d8eab66578.ngrok.io/createRoom',
+            data: { ...userInfo },
+            dataType: 'json',
+            isDirect: true
         }).then((res) => {
-            changeGlobalVal('roomNum', res.data.roomNum);
-            toPage3();
+            console.log(res)
+            if (res.err) {
+                Tip.show(res.msg, 2000, false, 'center')
+            } else {
+                changeGlobalVal('roomNum', res.data.roomNum);
+                toPage3();
+            }
         })
+
         toPage3();
     }
 

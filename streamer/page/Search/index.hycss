@@ -86,8 +86,10 @@
 }
 
 
-.boardItem{
+.checked{
     border-width: 2px;
     border-style: solid;
     border-color: white;
+    border-radius: 50%;
   }
+
