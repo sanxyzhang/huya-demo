@@ -14,9 +14,11 @@
 .titleText{
   width:86;
   height:26;
-  margin: 5px auto
+  margin: 20px auto;
 }
 
 .pageContent{
   flex:1;
+  justify-content: center;
+  align-items: center;
 }

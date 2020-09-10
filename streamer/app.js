@@ -4,7 +4,7 @@ import LeaderBoard from './page/Leaderboard';
 import Entry from './page/Entry';
 import Search from './page/Search';
 import './app.hycss'
-import './global.css'
+// import './global.css'
 const { View, Text, BackgroundImage } = UI
 
 class App extends Component {
@@ -14,11 +14,43 @@ class App extends Component {
 			currentPage: 'page1',
 			userInfo: null,
 			roomInfo: null,
-			isRoomOwner: false,
+			isRoomOwner: true,
+			roomNumber: null,
+			wbId: '',
+			wbMsg: ''
+
 		}
+		// hyExt.env.getInitialParam().then(param => {
+		// 	// 初始化参数包含wb参数，说明处于独立白板模式
+		// 	// this.setState({
+		// 	//     wb: true
+		// 	// })
+		// 	// 监听从原来小程序发送过来的独立白板数据
+		// 	hyExt.stream.onExtraWhiteBoardMessage({
+		// 		// 接收到数据，刷新视图
+		// 		callback: data => { this.setState({ wbMsg: data }); }
+		// 	})
+		// })
+		this.createWb();
 	}
 
-	UNSAFE_componentWillMount() {
+	createWb() {
+		let args = [];
+		args[0] = {};
+		args[0].x = 1;
+		args[0].y = 2;
+		args[0].width = 375;
+		args[0].height = 600;
+		hyExt.logger.info('创建小程序EXE白板：' + JSON.stringify(args));
+		hyExt.stream.addWhiteBoard(args[0]).then(() => {
+			hyExt.logger.info('创建小程序EXE白板成功')
+		}).catch(err => {
+			console.log(err);
+			hyExt.logger.info('创建小程序EXE白板失败，错误信息：' + err.message)
+		})
+	}
+
+	componentWillMount() {
 		hyExt.context.getUserInfo().then(userInfo => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息成功，返回：' + JSON.stringify(userInfo));
 			hyExt.context.getStreamerInfo().then(roomInfo => {
@@ -30,6 +62,7 @@ class App extends Component {
 						roomId: roomInfo.streamerRoomId
 					}
 				})
+				console.log(userInfo);
 			})
 		}).catch(err => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息失败，错误信息：' + err.message)
@@ -51,10 +84,6 @@ class App extends Component {
 	}
 
 	toPage3 = () => {
-		this.setState({
-			isRoomOwner: true
-		})
-
 		this.setStorageAndState('page3')
 	}
 	toPage2 = () => {
@@ -65,26 +94,37 @@ class App extends Component {
 	}
 
 	renderCurrentPage = () => {
-		const { currentPage, userInfo, isRoomOwner } = this.state;
-		switch (currentPage) {
-			case 'page1':
-				return <Entry toPage2={this.toPage2} toPage3={this.toPage3} userInfo={userInfo} changeGlobalVal={this.changeGlobalVal} />
-			case 'page3':
-				return <LeaderBoard num={5}
+		const { currentPage, userInfo, isRoomOwner, roomNumber } = this.state;
+		return <View>
+			<View style={{ display: (currentPage == 'page1' ? 'block' : 'none') }}>
+				<Entry toPage2={this.toPage2} toPage3={this.toPage3} userInfo={userInfo}
+					changeGlobalVal={this.changeGlobalVal}
+				/>
+			</View>
+			<View style={{ display: (currentPage == 'page3' ? 'block' : 'none') }}>
+				<LeaderBoard num={5}
 					toPage1={this.toPage1}
 					userInfo={userInfo}
 					isRoomOwner={isRoomOwner}
 					changeGlobalVal={this.changeGlobalVal}
+					roomNumber={roomNumber}
 				/>
-			default:
-				return <Search toPage1={this.toPage1} toPage3={this.toPage3} userInfo={userInfo} />
-		}
+			</View>
+			<View style={{ display: (currentPage == 'page2' ? 'block' : 'none') }}>
+				<Search toPage1={this.toPage1}
+					toPage3={this.toPage3}
+					userInfo={userInfo}
+					changeGlobalVal={this.changeGlobalVal}
+					currentPage={currentPage=='page2'}
+				/>
+			</View>
+		</View>
 	}
 	render() {
 		return (
 			<BackgroundImage className="pageBody" src={require("../img/img_bg01.png")}>
 				<BackgroundImage className="titleText" src={require("../img/text_name01.png")}></BackgroundImage>
-				<View className="pageContent">
+				<View className="pageContent" name={this.state.wbMsg}>
 					{this.renderCurrentPage()}
 				</View>
 			</BackgroundImage>

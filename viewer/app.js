@@ -4,7 +4,7 @@ import LeaderBoard from './page/Leaderboard';
 import Entry from './page/Entry';
 import Search from './page/Search';
 import './app.hycss'
-import './global.css'
+// import './global.css'
 const { View, Text, BackgroundImage } = UI
 
 class App extends Component {
@@ -14,21 +14,29 @@ class App extends Component {
 			currentPage: 'page1',
 			userInfo: null,
 			roomInfo: null,
-			isRoomOwner: false,
-			roomNum: null
+			isRoomOwner: true,
+			roomNumber: null
 		}
 	}
 
 	componentWillMount() {
 		hyExt.context.getUserInfo().then(userInfo => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息成功，返回：' + JSON.stringify(userInfo));
-			//userNick	用户昵称 userAvatarUrl 用户头像地址 
-			this.setState({
-				userInfo: userInfo
+			hyExt.context.getStreamerInfo().then(roomInfo => {
+				this.setState({
+					userInfo: {
+						userId: userInfo.userUnionId,
+						nickName: userInfo.userNick,
+						avatarUrl: userInfo.userAvatarUrl,
+						roomId: roomInfo.streamerRoomId
+					}
+				})
+				console.log(userInfo);
 			})
 		}).catch(err => {
 			hyExt.logger.info('获取当前用户（观众/主播）信息失败，错误信息：' + err.message)
 		})
+
 	}
 
 	setStorageAndState = (val) => {
@@ -45,10 +53,6 @@ class App extends Component {
 	}
 
 	toPage3 = () => {
-		this.setState({
-			isRoomOwner: true
-		})
-
 		this.setStorageAndState('page3')
 	}
 	toPage2 = () => {
@@ -58,25 +62,21 @@ class App extends Component {
 		this.setStorageAndState('page1')
 	}
 
-	createGame = () => {
-		let { userInfo } = this.state;
-
-	}
 	renderCurrentPage = () => {
-		const { currentPage, userInfo, isRoomOwner, roomNum } = this.state;
+		const { currentPage, userInfo, isRoomOwner,roomNumber } = this.state;
 		switch (currentPage) {
 			case 'page1':
-				return <Entry toPage2={this.toPage2} toPage3={this.toPage3} userInfo={userInfo} />
+				return <Entry toPage2={this.toPage2} toPage3={this.toPage3} userInfo={userInfo} changeGlobalVal={this.changeGlobalVal} />
 			case 'page3':
 				return <LeaderBoard num={5}
 					toPage1={this.toPage1}
 					userInfo={userInfo}
 					isRoomOwner={isRoomOwner}
-					roomNum={roomNum}
-					changeGlobalVal = {this.changeGlobalVal}
+					changeGlobalVal={this.changeGlobalVal}
+					roomNumber={roomNumber}
 				/>
 			default:
-				return <Search toPage1={this.toPage1} toPage3={this.toPage3} userInfo={userInfo} />
+				return <Search toPage1={this.toPage1} toPage3={this.toPage3} userInfo={userInfo} changeGlobalVal={this.changeGlobalVal}/>
 		}
 	}
 	render() {

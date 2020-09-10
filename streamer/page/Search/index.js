@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { TouchableWithoutFeedback } from 'react-native'
 import './index.hycss'
 
-const { View, Text, BackgroundImage, ScrollView, Image, Tip } = UI
+const { View, Text, BackgroundImage, ScrollView, Image, Tip, Input } = UI
 
 
 class Search extends Component {
@@ -11,19 +11,34 @@ class Search extends Component {
         super(props);
         this.state = {
             roomNumber: '',
-            roomList: null,
+            roomList: [
+            ],
             checkRoomNum: null,
         }
     }
-
+    
     componentDidMount() {
         this.getList();
+        hyExt.observer.on('joinRoom', (res) => {
+            console.log('joinRoom', res);
+            data = (JSON.parse(res)).data;
+            if (JSON.parse(res).err) { 
+                Tip.show(data.msg, 2000, false, 'center')
+                this.getList();
+            } else {
+                this.props.toPage3();
+            }
+        })
     }
-
+    componentWillReceiveProps(nextProps) {
+        if (nextProps.currentPage) {
+            this.getList();
+        }
+    }
     getList = () => {
         hyExt.request({
             method: 'POST',
-            url: 'http://91ccd8e7b540.ngrok.io/roomList',
+            url: 'http://jingjichang.evaaide.com:7001/roomList',
             data: {},
             dataType: 'json'
         }).then((res) => {
@@ -42,24 +57,20 @@ class Search extends Component {
     }
 
     joinGame = () => {
-        let { toPage3, userInfo } = this.props;
+        let { userInfo, changeGlobalVal } = this.props;
+        console.log(userInfo);
+        changeGlobalVal('roomNumber', this.state.roomNumber);
+        changeGlobalVal('isRoomOwner', false);
         hyExt.request({
             method: 'POST',
-            url: 'http://91ccd8e7b540.ngrok.io/joinRoom',
+            url: 'http://jingjichang.evaaide.com:7001/joinRoom',
             data: {
                 ...userInfo,
                 roomNumber: this.state.roomNumber
             },
             dataType: 'json'
         }).then((res) => {
-            if (res.err) {
-                Tip.show(res.msg, 2000, false, 'center')
-                this.getList();
-            } else {
-                toPage3()
-            }
         })
-
     }
 
     renderGroupImg = (imgList) => {
@@ -74,13 +85,13 @@ class Search extends Component {
         let { roomList, checkRoomNum } = this.state;
         return roomList && roomList.map((item, index) => {
             let roomItemClass = (item.roomNumber == checkRoomNum) ? "roomItem checked" : "roomItem"
-            return <TouchableWithoutFeedback onPress={this.checkRoom.bind(this,item.roomNumber)}>
+            return <TouchableWithoutFeedback key={index} onPress={this.checkRoom.bind(this, item.roomNumber)}>
                 <View key={index}>
                     <BackgroundImage className={roomItemClass} src={require("../../../img/img_list01.png")}>
                         <View className="boardContent">
                             <Image src={item.ownerImg} className="ownerImg"></Image>
-                            <Text className="userName">{item.ownerName}</Text>
-                            {this.renderGroupImg(item.membersImgs)}
+                            <Text className="userName">{item.ownerName||'小虎牙'}</Text>
+                            {this.renderGroupImg(item.memberImgs)}
                         </View>
                     </BackgroundImage>
                 </View>
@@ -95,13 +106,21 @@ class Search extends Component {
             <View className="searchContent">
                 <BackgroundImage className="searchInput" src={require("../../../img/img_input01.png")}>
                     <View>
-                        <input
+                        <Input
                             className="realInput"
-                            placeholder='请输入房间号'
+                            textAlign='left'
+                            value={this.state.roomNumber}
+                            placeholder='请输入房间密码'
                             onChange={(value) => {
-                                this.setState({ roomNumber: value })
+                                if (Number.isNaN(+value)) {
+                                    this.setState({ roomNumber: '' })
+                                } else {
+                                    this.setState({ roomNumber: value })
+                                }
                             }}
+                            inputStyle={{ color: 'white', fontSize: 20}}
                         />
+
                     </View>
                 </BackgroundImage>
                 <ScrollView className="roomScroll">

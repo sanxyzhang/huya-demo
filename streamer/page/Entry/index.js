@@ -15,8 +15,9 @@ class App extends Component {
         //请求生成房间号，并传递主播信息
         hyExt.request({
             method: 'POST',
-            url: 'http://a2d8eab66578.ngrok.io/createRoom',
+            url: 'http://jingjichang.evaaide.com:7001/createRoom',
             data: { ...userInfo },
+            header: { "timeout": 10000 },
             dataType: 'json',
             isDirect: true
         }).then((res) => {
@@ -24,8 +25,7 @@ class App extends Component {
             if (res.err) {
                 Tip.show(res.msg, 2000, false, 'center')
             } else {
-                changeGlobalVal('roomNum', res.data.roomNum);
-                toPage3();
+                changeGlobalVal('roomNumber', res.data.roomNumber);
             }
         })
 
@@ -36,8 +36,9 @@ class App extends Component {
         let { toPage2 } = this.props;
         toPage2()
     }
-    render() {
 
+    render() {
+        
         return (
             <View className="entryContent">
                 <BackgroundImage className="createGameBtn" src={require("../../../img/btn_big01.png")}>

@@ -3,64 +3,86 @@ import React, { Component } from 'react';
 import { TouchableWithoutFeedback } from 'react-native'
 import './index.hycss'
 
-const { View, Text, BackgroundImage, ScrollView, Image } = UI
+const { View, Text, BackgroundImage, ScrollView, Image, Tip, Input } = UI
 
 
 class Search extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            roomId: '',
-            roomList: null,
+            roomNumber: '',
+            roomList: [],
             checkRoomNum: null,
         }
     }
 
     componentDidMount() {
+        this.getList();
+    }
+
+    getList = () => {
         hyExt.request({
-            method: 'get',
-            url: 'https://www.qunar.com/hotel/mustTry?city=beijing_city'
+            method: 'POST',
+            url: 'http://jingjichang.evaaide.com:7001/roomList',
+            data: {},
+            dataType: 'json'
         }).then((res) => {
+            console.log(res.data.data);
             this.setState({
-                roomList: res.data
+                roomList: res.data.data
             })
         })
     }
 
+    checkRoom = (roomNumber) => {
+        this.setState({
+            roomNumber: roomNumber,
+            checkRoomNum: roomNumber
+        })
+    }
+
     joinGame = () => {
-        let { toPage3, userInfo } = this.props;
+        let { toPage3, userInfo, changeGlobalVal } = this.props;
+        console.log(userInfo);
+        changeGlobalVal('roomNumber', this.state.roomNumber);
+        changeGlobalVal('isRoomOwner', false);
         hyExt.request({
             method: 'POST',
-            url: 'https://www.qunar.com/hotel/mustTry?city=beijing_city',
-            data: userInfo,
+            url: 'http://jingjichang.evaaide.com:7001/joinRoom',
+            data: {
+                ...userInfo,
+                roomNumber: this.state.roomNumber
+            },
             dataType: 'json'
         }).then((res) => {
-            toPage3()
+            if (res.err) {
+                Tip.show(res.msg, 2000, false, 'center')
+                this.getList();
+            } else {
+            }
         })
-
+        toPage3()
     }
 
     renderGroupImg = (imgList) => {
         return <View className="groupImg">
-            {imgList.map((item, index) => {
-                return <Image src={require("../../../img/xiaoguotu01.png")} className="groupImgitem"></Image>
+            {imgList && imgList.map((item, index) => {
+                return <Image src={item} className="groupImgitem" key={index}></Image>
             })}
         </View>
     }
 
     renderRoomList = () => {
         let { roomList, checkRoomNum } = this.state;
-        return roomList.map((item, index) => {
-            let roomItemClass = (item.roomNum == checkRoomNum) ? "roomItem checkd" : "roomItem"
-            return <TouchableWithoutFeedback onPress={(item) => {
-                this.setState({checkRoomNum: item.roomNum})
-            }}>
-                <View className={roomItemClass} key={index} onPress={() => { console.log(111) }}>
-                    <BackgroundImage className="boardItem" src={require("../../../img/img_list01.png")}>
+        return roomList && roomList.map((item, index) => {
+            let roomItemClass = (item.roomNumber == checkRoomNum) ? "roomItem checked" : "roomItem"
+            return <TouchableWithoutFeedback key={index} onPress={this.checkRoom.bind(this, item.roomNumber)}>
+                <View key={index}>
+                    <BackgroundImage className={roomItemClass} src={require("../../../img/img_list01.png")}>
                         <View className="boardContent">
-                            <Image src={require("../../../img/xiaoguotu01.png")} className="ownerImg"></Image>
-                            <Text className="userName">张{index}</Text>
-                            {this.renderGroupImg([1, 2, 3])}
+                            <Image src={item.ownerImg} className="ownerImg"></Image>
+                            <Text className="userName">{item.ownerName}</Text>
+                            {this.renderGroupImg(item.membersImgs)}
                         </View>
                     </BackgroundImage>
                 </View>
@@ -75,13 +97,17 @@ class Search extends Component {
             <View className="searchContent">
                 <BackgroundImage className="searchInput" src={require("../../../img/img_input01.png")}>
                     <View>
-                        <input
+                        <Input
                             className="realInput"
+                            textAlign='left'
+                            value={this.state.roomNumber}
                             placeholder='请输入房间号'
                             onChange={(value) => {
-                                this.setState({ roomId: value })
+                                this.setState({ roomNumber: value })
                             }}
+                            inputStyle={{ color: 'white', fontSize: 20}}
                         />
+
                     </View>
                 </BackgroundImage>
                 <ScrollView className="roomScroll">

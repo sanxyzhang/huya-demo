@@ -36,6 +36,14 @@
   width: 300;
   margin: 0 auto;
   margin-bottom: 8;
+
+}
+.btnGroup{
+  width: 375;
+  display: flex;
+  justify-content: space-evenly;
+  flex-direction: row;
+  align-items: center;
 }
 
 .imgLogo {
@@ -45,11 +53,13 @@
 
 .userName {
   color: white;
+  font-size: 18;
 }
 
 .itemNum {
   margin-right: 20;
   color: white;
+  font-size: 18;
 }
 
 .gameRuleContent,
@@ -62,14 +72,25 @@
 .startBtnBg{
   height: 48;
   width: 142;
-  position: absolute;
-  bottom: -50;
-  left: 30%;
 }
 
 .white_24{
   color: white;
   font-size: 24;
+}
+.guideView{
+  display:flex;
+  flex-direction: row;
+}
+.white_20{
+  color: white;
+  font-size: 20;
+}
+.guide{
+  width: 16;
+  height: 16;
+  margin-top: 5;
+  margin-left: 5;
 }
 .startBtn{
   background: transparent;
@@ -81,9 +102,6 @@
 .leaveBtnBg {
   height: 48;
   width: 142;
-  position: absolute;
-  bottom: -100;
-  left: 30%;
 }
 
 .leaveBtn {
@@ -96,8 +114,15 @@
 .modalLeaveBtnBg{
   height: 48;
   width: 142;
-  margin-left: 30;
+  margin-left: 20;
 }
+
+.modalLeaveBtnOnlyBg{
+  height: 48;
+  width: 142;
+  margin-left: 20;
+}
+
 .modalCancelBtnBg {
   height: 48;
   width: 142;
@@ -125,10 +150,22 @@
   justify-content: flex-start;
 }
 
+.onlyBtn{
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin-right: 8;
+}
 .wihteCommonText {
   color: white;
   text-align: center;
   font-size: 18;
+  height: 100%;
+}
+.scrollView{
+  height: 110;
+  overflow: auto;
+  margin-top: 5;
 }
 
 .groupImg{

@@ -8,6 +8,10 @@
     text-align: center;
     margin: auto;
     color: white;
+    width: 200;
+    height: 48;
+    font-size: 18;
+    padding-top: 10;
 }
 .entryContent{
     display: flex;

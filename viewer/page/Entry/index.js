@@ -3,7 +3,7 @@ import React, { Component } from 'react';
 import { TouchableWithoutFeedback } from 'react-native'
 import './index.hycss'
 
-const { View, Text, BackgroundImage } = UI
+const { View, Text, BackgroundImage, Tip } = UI
 
 class App extends Component {
     constructor(props) {
@@ -15,30 +15,38 @@ class App extends Component {
         //请求生成房间号，并传递主播信息
         hyExt.request({
             method: 'POST',
-            url: 'https://www.qunar.com/hotel/mustTry?city=beijing_city',
-            data: { userInfo },
-            dataType: 'json'
+            url: 'http://jingjichang.evaaide.com:7001/createRoom',
+            data: { ...userInfo },
+            header: { "timeout": 10000 },
+            dataType: 'json',
+            isDirect: true
         }).then((res) => {
-            changeGlobalVal('roomNum', res.data.roomNum);
-            toPage3();
+            console.log(res)
+            if (res.err) {
+                Tip.show(res.msg, 2000, false, 'center')
+            } else {
+                changeGlobalVal('roomNumber', res.data.roomNumber);
+            }
         })
 
+        toPage3();
     }
 
     joinGame = () => {
         let { toPage2 } = this.props;
+        toPage2()
     }
     render() {
 
         return (
             <View className="entryContent">
                 <BackgroundImage className="createGameBtn" src={require("../../../img/btn_big01.png")}>
-                    <TouchableWithoutFeedback onPress={toPage3}>
+                    <TouchableWithoutFeedback onPress={this.createGame}>
                         <Text className="btnText">创建比赛</Text>
                     </TouchableWithoutFeedback>
                 </BackgroundImage>
                 <BackgroundImage className="entryGameBtn" src={require("../../../img/btn_big02.png")}>
-                    <TouchableWithoutFeedback onPress={toPage2}>
+                    <TouchableWithoutFeedback onPress={this.joinGame}>
                         <Text className="btnText">加入比赛</Text>
                     </TouchableWithoutFeedback>
                 </BackgroundImage>

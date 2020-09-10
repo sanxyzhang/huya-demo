@@ -1,9 +1,10 @@
-.searchContent{
+.searchContent {
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
     height: 80%;
 }
+
 .btnView {
     display: flex;
     justify-content: center;
@@ -22,11 +23,16 @@
     height: 48;
 }
 
-.btnWarpView{
-    margin: auto;
+.btnWarpView {
+    width: 142;
+    height: 48;
 }
 
 .btnText {
+    width: 142;
+    height: 48;
+    padding-top: 10;
+    font-size: 18;
     text-align: center;
     color: white;
 }
@@ -38,58 +44,71 @@
     margin-bottom: 20;
 }
 
-.realInput{
-    background: transparent;
-    font-size: 20;
-    border: 0;
-    height: 38;
+
+
+::-webkit-input-placeholder {
+    /* WebKit browsers */
     color: white;
-    outline:none;
 }
 
-::-webkit-input-placeholder { /* WebKit browsers */ 
-    color: white; 
-} 
-
-.boardItem{
+.boardItem {
     height: 44;
     width: 300;
     margin: 0 auto;
     margin-bottom: 20;
 }
-.boardContent{
+
+.boardContent {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     height: 100%;
     align-items: center;
 }
-.groupImg{
+
+.groupImg {
     display: flex;
     justify-content: flex-start;
-    flex-direction: row;    
+    flex-direction: row;
 }
-.ownerImg, .groupImgitem{
+
+.ownerImg,
+.groupImgitem {
     width: 32;
     height: 32;
     border-radius: 50%;
     align-self: center;
-    margin-left:10;
+    margin-left: 10;
 }
 
-.groupImgitem{
+.groupImgitem {
     margin-left: -15;
 }
 
-.roomScroll{
+.roomScroll {
     height: 280;
+    overflow: scroll;
 }
 
+.userName{
+    font-size: 18;
+    color: white;
+}
+.roomItem {
+    height: 44;
+    width: 300;
+    margin: 10px auto;
+}
 
-.checked{
+.checked {
     border-width: 2px;
     border-style: solid;
     border-color: white;
-    border-radius: 50%;
-  }
+    border-radius: 44px;
+}
 
+.realInput,input {
+    background: transparent;
+    border: 0;
+    height: 38;
+}
