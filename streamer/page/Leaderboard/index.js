@@ -4,7 +4,7 @@ import CountUp from 'react-countup';
 import { TouchableWithoutFeedback } from 'react-native'
 import './index.hycss'
 
-const { View, Text, BackgroundImage, Button, Modal, Image, Tip } = UI
+const { View, Text, BackgroundImage, Button, Modal, Image, Tip, ScrollView } = UI
 
 const config = {
     childH: 30,
@@ -21,11 +21,73 @@ class LeaderBoard extends Component {
         this.state = {
             itemTopArr: [0, 54, 108, 162, 216],
             itemValArr: [],
+            oldItemValArr: [],
             started: false,
             over: false,
             lastTime: 60 * 20,
             roomNumber: '',
-            modalContent: 'leave'
+            modalContent: 'leave',
+            wb: false,
+            wbId: null,
+            wbMsg: ''
+        }
+        hyExt.env.getInitialParam().then(param => {
+            hyExt.logger.info('获取当前小程序初始化参数成功，返回：' + JSON.stringify(param))
+            if (param.wb) {
+                // 初始化参数包含wb参数，说明处于独立白板模式
+                this.setState({
+                    wb: true
+                })
+                hyExt.stream.onExtraWhiteBoardMessage({
+                    // 接收到数据，刷新视图
+                    callback: data => {
+                        console.log("接受独立白板成功");
+                        this.setState({ wbMsg: data });
+                    }
+                })
+            }
+        })
+    }
+    createWb = () => {
+        let width = 375;
+        let height = 700;
+        // 创建独立白板
+        hyExt.stream.addExtraWhiteBoard({
+            width, height
+        }).then(({ wbId }) => {
+            // 返回独立白板id，发送数据的时候需要带上这个参数，所以state里要加上这东西
+            console.log('白班id' + wbId)
+            this.state.wbId = wbId
+        }).catch((err) => {
+            console.log(err)
+        })
+    }
+
+    componentWillReceiveProps(props) {
+        if (props.currentPage == 'page3') {
+            this.createWb();
+        } else {
+            hyExt.stream.removeExtraWhiteBoard({ wbId: this.state.wbId }).then(() => {
+                hyExt.logger.info('移除小程序独立白板成功')
+            }).catch(err => {
+                hyExt.logger.info('移除小程序独立白板失败，错误信息：' + err.message)
+            })
+        }
+    }
+    componentDidUpdate() {
+        this.sendToWb(+new Date)
+    }
+
+    sendToWb(data) {
+        let { wbId } = this.state
+        // this.emitMessage(data);
+        // 发送数据到独立白板
+        if (this.state.wbId) {
+            hyExt.stream.sendToExtraWhiteBoard({
+                wbId,
+                data: data
+            })
+            console.log("发送到独立白板成功");
         }
     }
 
@@ -109,7 +171,7 @@ class LeaderBoard extends Component {
             if (!this.state.over) {
                 hyExt.request({
                     method: 'POST',
-                    url: 'http://jingjichang.evaaide.com:7001/totalPay',
+                    url: ' http://19581e7a2913.ngrok.io/totalPay',
                     header: { "timeout": 10000 },
                     data: {
                         roomNumber: this.state.roomNumber
@@ -152,7 +214,8 @@ class LeaderBoard extends Component {
                 })
             })
             this.setState({
-                itemValArr: newItemValArr
+                itemValArr: newItemValArr,
+                oldItemValArr: this.state.itemValArr
             })
             let newArrSort = this.compareCreateSort(newItemValArr);
             this.changeStateTop(newArrSort);
@@ -166,7 +229,7 @@ class LeaderBoard extends Component {
             if (!this.state.started) {
                 this.comfirm();
             }
-        }, 15 * 1000 * 60)
+        }, 15 * 1000 * 60);
     }
 
     removeRoomEvent() {
@@ -204,16 +267,20 @@ class LeaderBoard extends Component {
 
     //每次top有变化则render
     renderBoardItemList() {
-        let { itemTopArr, itemValArr } = this.state;
+        let { itemTopArr, itemValArr, oldItemValArr } = this.state;
         return itemValArr.map((item, index) => {
-            item.avatarUrl = item.avatarUrl.replace('http://', 'https://')
+            item.avatarUrl = item.avatarUrl && item.avatarUrl.replace('http://', 'https://') || ''
             return (
                 <BackgroundImage className="boardItem" key={item.userId} style={{ top: itemTopArr[index] }}
                     src={require("../../../img/img_list01.png")}>
                     <View className="boardContent">
                         <Image src={item.avatarUrl} className="groupImg"></Image>
                         <Text className="userName">{item.nickName || '小虎牙'}</Text>
-                        <Text className="itemNum"><CountUp end={item.totalPay} /></Text>
+                        <Text className="itemNum">
+                            <CountUp
+                                start={(oldItemValArr[index] && oldItemValArr[index].totalPay) || 0}
+                                end={item.totalPay} />
+                        </Text>
                     </View>
                 </BackgroundImage>
             )
@@ -231,7 +298,7 @@ class LeaderBoard extends Component {
         }, 1500)
         hyExt.request({
             method: 'POST',
-            url: 'http://jingjichang.evaaide.com:7001/leaveRoom',
+            url: ' http://19581e7a2913.ngrok.io/leaveRoom',
             data: {
                 userId: this.props.userInfo.userId,
                 roomNumber: this.props.roomNumber || this.state.roomNumber
@@ -254,7 +321,7 @@ class LeaderBoard extends Component {
         })
         hyExt.request({
             method: 'POST',
-            url: 'http://jingjichang.evaaide.com:7001/startRoom',
+            url: ' http://19581e7a2913.ngrok.io/startRoom',
             data: {
                 userId: userInfo.userId,
                 roomNumber: this.state.roomNumber
@@ -274,71 +341,87 @@ class LeaderBoard extends Component {
         let canStartGame = !started && isRoomOwner && itemValArr.length > 1;
         let second = lastTime % 60 < 10 ? '0' + lastTime % 60 : lastTime % 60;
         let min = (lastTime - second) / 60 < 10 ? '0' + (lastTime - second) / 60 : (lastTime - second) / 60;
-        return (
-            <View>
+        if (this.state.wb) {
+            return <View>
                 <View className="topInfo">
                     <Text className="roomText">
                         {
                             !started ? `当前房间密码：${roomNumber || this.state.roomNumber}` :
                                 lastTime <= 0 ? '游戏已结束' : `剩余时间: ${min}:${second}`
                         }
-
                     </Text>
                     <BackgroundImage className="textLine" src={require("../../../img/img_line01.png")}></BackgroundImage>
                 </View>
                 <View className="LeaderBoardMain">
                     {this.renderBoardItemList()}
                 </View>
-                <BackgroundImage className="textLine" src={require("../../../img/img_line01.png")}></BackgroundImage>
-                <View className="btnGroup">
-                    {
-                        <TouchableWithoutFeedback className="guideViewTouch" onPress={this.clickLeave.bind(this, 'rule')}>
+            </View>
+        } else {
+            return (
+                <View>
+                    <View className="topInfo">
+                        <Text className="roomText">
+                            {
+                                !started ? `当前房间密码：${roomNumber || this.state.roomNumber}` :
+                                    lastTime <= 0 ? '游戏已结束' : `剩余时间: ${min}:${second}`
+                            }
+
+                        </Text>
+                        <BackgroundImage className="textLine" src={require("../../../img/img_line01.png")}></BackgroundImage>
+                    </View>
+                    <View className="LeaderBoardMain">
+                        {this.renderBoardItemList()}
+                    </View>
+                    <BackgroundImage className="textLine" src={require("../../../img/img_line01.png")}></BackgroundImage>
+                    <View className="btnGroup">
+                        {
+                            <TouchableWithoutFeedback className="guideViewTouch" onPress={this.clickLeave.bind(this, 'rule')}>
+                                <View className="guideView">
+                                    <Text className="white_20">游戏规则</Text>
+                                    <BackgroundImage className="guide" src={require("../../../img/Btn_yindao_1.png")}></BackgroundImage>
+                                </View>
+                            </TouchableWithoutFeedback>
+                        }
+                        <TouchableWithoutFeedback className="guideViewTouch" onPress={this.clickLeave.bind(this, 'phone')}>
                             <View className="guideView">
-                                <Text className="white_20">游戏规则</Text>
+                                <Text className="white_20">联系客服</Text>
                                 <BackgroundImage className="guide" src={require("../../../img/Btn_yindao_1.png")}></BackgroundImage>
                             </View>
                         </TouchableWithoutFeedback>
-                    }
-                    <TouchableWithoutFeedback className="guideViewTouch" onPress={this.clickLeave.bind(this, 'phone')}>
-                        <View className="guideView">
-                            <Text className="white_20">联系客服</Text>
-                            <BackgroundImage className="guide" src={require("../../../img/Btn_yindao_1.png")}></BackgroundImage>
-                        </View>
-                    </TouchableWithoutFeedback>
-                </View>
-                <View className="btnGroup">
-                    {
-                        canStartGame && <BackgroundImage className="startBtnBg" src={require("../../../img/btn_little01.png")}>
+                    </View>
+                    {!this.state.wb && <View className="btnGroup">
+                        {
+                            canStartGame && <BackgroundImage className="startBtnBg" src={require("../../../img/btn_little01.png")}>
+                                <View>
+                                    <Button className="startBtn" onPress={this.clickStart}>
+                                        <Text className="white_24">开始</Text>
+                                    </Button>
+                                </View>
+                            </BackgroundImage>
+                        }
+                        <BackgroundImage className="leaveBtnBg" src={require("../../../img/btn_little02.png")}>
                             <View>
-                                <Button className="startBtn" onPress={this.clickStart}>
-                                    <Text className="white_24">开始</Text>
-                                </Button>
+                                <Button className="leaveBtn" onPress={this.clickLeave.bind(this, 'leave')}><Text className="white_24">退出</Text></Button>
                             </View>
                         </BackgroundImage>
-                    }
-                    <BackgroundImage className="leaveBtnBg" src={require("../../../img/btn_little02.png")}>
-                        <View>
-                            <Button className="leaveBtn" onPress={this.clickLeave.bind(this, 'leave')}><Text className="white_24">退出</Text></Button>
-                        </View>
-                    </BackgroundImage>
-                </View>
-                <Modal
-                    ref={(c) => { this._modal = c; }}
-                    cancelable={true}
-                    className="confirmLeave"
-                >
-                    <BackgroundImage className="confirmLeaveBg" src={require("../../../img/img_bg02.png")}>
-                        {
-                            modalContent == 'phone' && <View>
-                                <Text className="wihteCommonText">联系客服 QQ群:737956370</Text>
-                                <Text className="wihteCommonText">邮箱:support@evaaide.com</Text>
-                            </View>
-                        }
-                        {
-                            modalContent == 'rule' && <View>
-                                <View className="scrollView">
-                                    <Text className="wihteCommonText">
-                                        游戏说明<br />
+                    </View>}
+                    <Modal
+                        ref={(c) => { this._modal = c; }}
+                        cancelable={true}
+                        className="confirmLeave"
+                    >
+                        <BackgroundImage className="confirmLeaveBg" src={require("../../../img/img_bg02.png")}>
+                            {
+                                modalContent == 'phone' && <View>
+                                    <Text className="wihteCommonText">联系客服 QQ群:737956370</Text>
+                                    <Text className="wihteCommonText">邮箱:support@evaaide.com</Text>
+                                </View>
+                            }
+                            {
+                                modalContent == 'rule' && <View>
+                                    <ScrollView className="scrollView">
+                                        <Text className="wihteCommonText">
+                                            游戏说明<br />
                                     可供2~5位主播同场竞技的小游戏<br />
                                     比赛20分钟内谁收到的礼物分值更高<br />
                                     【除上上签与礼盒本身之外，<br />
@@ -348,43 +431,44 @@ class LeaderBoard extends Component {
                                     均可以加入到房间内一起比赛。<br />
                                     推荐与视频连麦功能一并使用，<br />
                                     以达到优秀的节目效果<br />
-                                    </Text>
+                                        </Text>
+                                    </ScrollView>
                                 </View>
-                            </View>
-                        }
-                        {
-                            modalContent == 'leave' && <View>
-                                <Text className="wihteCommonText">退出后将解散本次比赛队伍</Text>
-                                <Text className="wihteCommonText">您确认要退出？</Text>
-                            </View>
-                        }
-                        {
-                            modalContent !== 'leave' && <View className="onlyBtn">
-                                <BackgroundImage className="modalLeaveBtnOnlyBg" src={require("../../../img/btn_little02.png")}>
-                                    <View>
-                                        <Button className="modalLeaveBtn" onPress={this.cancelComfirm}><Text className="white_24">确定</Text></Button>
-                                    </View>
-                                </BackgroundImage>
-                            </View>
-                        }
-                        {
-                            modalContent == 'leave' && <View className="modalBtnGroup">
-                                <BackgroundImage className="modalLeaveBtnBg" src={require("../../../img/btn_little02.png")}>
-                                    <View>
-                                        <Button className="modalLeaveBtn" onPress={this.comfirm}><Text className="white_24">退出</Text></Button>
-                                    </View>
-                                </BackgroundImage>
-                                <BackgroundImage className="modalCancelBtnBg" src={require("../../../img/btn_little01.png")}>
-                                    <View>
-                                        <Button className="modalCancelBtn" onPress={this.cancelComfirm}><Text className="white_24">取消</Text></Button>
-                                    </View>
-                                </BackgroundImage>
-                            </View>
-                        }
-                    </BackgroundImage>
-                </Modal>
-            </View>
-        )
+                            }
+                            {
+                                modalContent == 'leave' && <View>
+                                    <Text className="wihteCommonText">退出后将解散本次比赛队伍</Text>
+                                    <Text className="wihteCommonText">您确认要退出？</Text>
+                                </View>
+                            }
+                            {
+                                modalContent !== 'leave' && <View className="onlyBtn">
+                                    <BackgroundImage className="modalLeaveBtnOnlyBg" src={require("../../../img/btn_little02.png")}>
+                                        <View>
+                                            <Button className="modalLeaveBtn" onPress={this.cancelComfirm}><Text className="white_24">确定</Text></Button>
+                                        </View>
+                                    </BackgroundImage>
+                                </View>
+                            }
+                            {
+                                modalContent == 'leave' && <View className="modalBtnGroup">
+                                    <BackgroundImage className="modalLeaveBtnBg" src={require("../../../img/btn_little02.png")}>
+                                        <View>
+                                            <Button className="modalLeaveBtn" onPress={this.comfirm}><Text className="white_24">退出</Text></Button>
+                                        </View>
+                                    </BackgroundImage>
+                                    <BackgroundImage className="modalCancelBtnBg" src={require("../../../img/btn_little01.png")}>
+                                        <View>
+                                            <Button className="modalCancelBtn" onPress={this.cancelComfirm}><Text className="white_24">取消</Text></Button>
+                                        </View>
+                                    </BackgroundImage>
+                                </View>
+                            }
+                        </BackgroundImage>
+                    </Modal>
+                </View>
+            )
+        }
     }
 
     clickLeave = (key) => {

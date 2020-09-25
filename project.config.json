@@ -16,7 +16,7 @@
       "webTitle": "web_demo",
       "designWidth": 780,
       "https": true,
-      "host": "localhost",
+      "host": "127.0.0.1",
       "port": 18080,
       "enableLint": {
         "stylelint": false,

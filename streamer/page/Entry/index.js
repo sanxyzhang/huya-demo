@@ -15,7 +15,7 @@ class App extends Component {
         //请求生成房间号，并传递主播信息
         hyExt.request({
             method: 'POST',
-            url: 'http://jingjichang.evaaide.com:7001/createRoom',
+            url: ' http://19581e7a2913.ngrok.io/createRoom',
             data: { ...userInfo },
             header: { "timeout": 10000 },
             dataType: 'json',
