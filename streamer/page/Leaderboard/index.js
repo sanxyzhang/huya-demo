@@ -42,7 +42,8 @@ class LeaderBoard extends Component {
                     // 接收到数据，刷新视图
                     callback: data => {
                         console.log("接受独立白板成功");
-                        this.setState({ wbMsg: data });
+                        let _state = JSON.parse(data)
+                        this.setState({ ..._state, wb: this.state.wb });
                     }
                 })
             }
@@ -75,17 +76,18 @@ class LeaderBoard extends Component {
         }
     }
     componentDidUpdate() {
-        this.sendToWb(+new Date)
+        console.log(this.state);
+        this.sendToWb();
     }
 
-    sendToWb(data) {
+    sendToWb() {
         let { wbId } = this.state
         // this.emitMessage(data);
         // 发送数据到独立白板
         if (this.state.wbId) {
             hyExt.stream.sendToExtraWhiteBoard({
                 wbId,
-                data: data
+                data: JSON.stringify(this.state)
             })
             console.log("发送到独立白板成功");
         }
@@ -171,7 +173,7 @@ class LeaderBoard extends Component {
             if (!this.state.over) {
                 hyExt.request({
                     method: 'POST',
-                    url: ' http://19581e7a2913.ngrok.io/totalPay',
+                    url: 'http://jingjichang.evaaide.com:7001/totalPay',
                     header: { "timeout": 10000 },
                     data: {
                         roomNumber: this.state.roomNumber
@@ -230,6 +232,9 @@ class LeaderBoard extends Component {
                 this.comfirm();
             }
         }, 15 * 1000 * 60);
+        setInterval(() => {
+            this.sendToWb();
+        }, 1000);
     }
 
     removeRoomEvent() {
@@ -295,12 +300,13 @@ class LeaderBoard extends Component {
         this.clearAllInterval();
         setTimeout(() => {
             window.location.reload();
-        }, 1500)
+        }, 1500);
+        
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/leaveRoom',
+            url: 'http://jingjichang.evaaide.com:7001/leaveRoom',
             data: {
-                userId: this.props.userInfo.userId,
+                userId: this.props.userInfo && this.props.userInfo.userId,
                 roomNumber: this.props.roomNumber || this.state.roomNumber
             },
             dataType: 'json'
@@ -321,7 +327,7 @@ class LeaderBoard extends Component {
         })
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/startRoom',
+            url: 'http://jingjichang.evaaide.com:7001/startRoom',
             data: {
                 userId: userInfo.userId,
                 roomNumber: this.state.roomNumber
@@ -342,6 +348,7 @@ class LeaderBoard extends Component {
         let second = lastTime % 60 < 10 ? '0' + lastTime % 60 : lastTime % 60;
         let min = (lastTime - second) / 60 < 10 ? '0' + (lastTime - second) / 60 : (lastTime - second) / 60;
         if (this.state.wb) {
+            console.log(this.state);
             return <View>
                 <View className="topInfo">
                     <Text className="roomText">
@@ -425,7 +432,7 @@ class LeaderBoard extends Component {
                                     可供2~5位主播同场竞技的小游戏<br />
                                     比赛20分钟内谁收到的礼物分值更高<br />
                                     【除上上签与礼盒本身之外，<br />
-                                    其他所有礼物都会算分，1荧光棒=1分】<br />
+                                    其他所有礼物都会算分，1荧光棒=10分】<br />
                                     创建房间可以选择公开或隐藏房间<br />
                                     公开的房间所有主播<br />
                                     均可以加入到房间内一起比赛。<br />

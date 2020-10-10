@@ -165,7 +165,7 @@ class LeaderBoard extends Component {
         console.log(this.state.roomNumber);
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/leaveRoom',
+            url: 'http://jingjichang.evaaide.com:7001/leaveRoom',
             data: {
                 userId: this.props.userInfo.userId,
                 roomNumber: this.props.roomNumber || this.state.roomNumber
@@ -191,7 +191,7 @@ class LeaderBoard extends Component {
         })
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/startRoom',
+            url: 'http://jingjichang.evaaide.com:7001/startRoom',
             data: {
                 userId: userInfo.userId,
                 roomNumber: this.state.roomNumber
@@ -215,7 +215,7 @@ class LeaderBoard extends Component {
             if (!this.state.over) {
                 hyExt.request({
                     method: 'POST',
-                    url: ' http://19581e7a2913.ngrok.io/totalPay',
+                    url: 'http://jingjichang.evaaide.com:7001/totalPay',
                     header: { "timeout": 10000 },
                     data: {
                         roomNumber: this.state.roomNumber

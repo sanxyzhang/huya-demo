@@ -128,7 +128,7 @@
 .wihteCommonText {
   color: white;
   text-align: center;
-  font-size: 18;
+  font-size: 14;
 }
 
 .groupImg{

@@ -23,7 +23,7 @@ class Search extends Component {
     getList = () => {
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/roomList',
+            url: 'http://jingjichang.evaaide.com:7001/roomList',
             data: {},
             dataType: 'json'
         }).then((res) => {
@@ -48,7 +48,7 @@ class Search extends Component {
         changeGlobalVal('isRoomOwner', false);
         hyExt.request({
             method: 'POST',
-            url: ' http://19581e7a2913.ngrok.io/joinRoom',
+            url: 'http://jingjichang.evaaide.com:7001/joinRoom',
             data: {
                 ...userInfo,
                 roomNumber: this.state.roomNumber
