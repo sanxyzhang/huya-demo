@@ -23,3 +23,4 @@
 - [SDK文档](https://dev.huya.com/docs#/sdk/SDK%E6%96%87%E6%A1%A3)
 - [小程序商店](https://appstore.huya.com/)
 - [vscode插件](https://marketplace.visualstudio.com/items?itemName=mogewcy.hyextvscode)
+1
