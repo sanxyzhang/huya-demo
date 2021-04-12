@@ -24,3 +24,4 @@
 - [小程序商店](https://appstore.huya.com/)
 - [vscode插件](https://marketplace.visualstudio.com/items?itemName=mogewcy.hyextvscode)
 1
+2
